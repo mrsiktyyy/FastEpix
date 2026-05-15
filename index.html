@@ -194,7 +194,6 @@
             box-shadow: 0 0 12px #ff4d4d;
         }
 
-        /* Карточки главной */
         .black-card {
             background: rgba(0, 0, 0, 0.7);
             border-radius: 2.2rem;
@@ -252,13 +251,24 @@
             word-break: break-all;
         }
 
+        .server-block {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 100, 100, 0.3);
+        }
+        .server-block:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
         .ip-block {
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 1rem;
-            margin-top: 1.3rem;
+            margin-top: 1rem;
             background: rgba(0, 0, 0, 0.6);
             padding: 0.8rem 1.2rem;
             border-radius: 60px;
@@ -350,6 +360,12 @@
             opacity: 1;
             transform: translateX(-50%) scale(1);
         }
+
+        @media (max-width: 700px) {
+            .server-title { font-size: 2rem; }
+            .info-row { font-size: 1rem; }
+            .ip-address { font-size: 0.9rem; }
+        }
     </style>
 </head>
 <body>
@@ -367,27 +383,48 @@
     </div>
 
     <div class="nav-links">
-        <a href="index.html" class="nav-link active">Главная</a>
-        <a href="news.html" class="nav-link">Новости FastEpix</a>
-        <a href="devs.html" class="nav-link">О разработчиках</a>
+        <a href="/" class="nav-link active">Главная</a>
+        <a href="/news" class="nav-link">Новости FastEpix</a>
+        <a href="/devs" class="nav-link">О разработчиках</a>
     </div>
 
     <div class="home-grid">
         <div class="black-card">
             <div class="server-title">FastEpix</div>
-            <div class="info-row">
-                <span class="info-label">Режим:</span>
-                <span class="info-value">Анархия (без вайпов)</span>
+            
+            <!-- Сервер 1.16.5 -->
+            <div class="server-block">
+                <div class="info-row">
+                    <span class="info-label">Версия:</span>
+                    <span class="info-value">1.16.5</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Режим:</span>
+                    <span class="info-value">Анархия (без вайпов)</span>
+                </div>
+                <div class="ip-block">
+                    <span class="ip-address" id="serverIp1">MrSiktyyy.aternos.me</span>
+                    <button class="copy-btn" data-ip="MrSiktyyy.aternos.me">Копировать IP</button>
+                </div>
             </div>
-            <div class="info-row">
-                <span class="info-label">Версия:</span>
-                <span class="info-value">1.16.5</span>
-            </div>
-            <div class="ip-block">
-                <span class="ip-address" id="serverIp">MrSiktyyy.aternos.me</span>
-                <button class="copy-btn" id="copyIpBtn">Копировать IP</button>
+
+            <!-- Новый сервер 1.21.11 -->
+            <div class="server-block">
+                <div class="info-row">
+                    <span class="info-label">Версия:</span>
+                    <span class="info-value">1.21.11</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Режим:</span>
+                    <span class="info-value">Новый FastEpix</span>
+                </div>
+                <div class="ip-block">
+                    <span class="ip-address" id="serverIp2">FastEpix.aternos.me</span>
+                    <button class="copy-btn" data-ip="FastEpix.aternos.me">Копировать IP</button>
+                </div>
             </div>
         </div>
+
         <div class="transparent-card">
             <div class="desc-title">Описание сервера FastEpix</div>
             <div class="desc-text">
@@ -401,32 +438,38 @@
     <footer>FastEpix © 2024-2026</footer>
 </div>
 
+<div id="toastMsg" class="toast-msg">IP скопирован</div>
+
 <script>
-    const ipAddress = "MrSiktyyy.aternos.me";
-    const copyBtn = document.getElementById('copyIpBtn');
-    const toast = document.getElementById('toastMsg');
-    let toastTimeout;
     function showToast(msg) {
-        if (toastTimeout) clearTimeout(toastTimeout);
+        const toast = document.getElementById('toastMsg');
+        if (window.toastTimeout) clearTimeout(window.toastTimeout);
         toast.textContent = msg || "IP скопирован";
         toast.classList.add('show');
-        toastTimeout = setTimeout(() => toast.classList.remove('show'), 2200);
+        window.toastTimeout = setTimeout(() => toast.classList.remove('show'), 2200);
     }
-    async function copyIpToClipboard() {
+
+    async function copyIpToClipboard(ip) {
         try {
-            await navigator.clipboard.writeText(ipAddress);
-            showToast("✅ IP скопирован: " + ipAddress);
+            await navigator.clipboard.writeText(ip);
+            showToast("✅ IP скопирован: " + ip);
         } catch {
             const ta = document.createElement('textarea');
-            ta.value = ipAddress;
+            ta.value = ip;
             document.body.appendChild(ta);
             ta.select();
             document.execCommand('copy');
             document.body.removeChild(ta);
-            showToast("📋 IP скопирован");
+            showToast("📋 IP скопирован: " + ip);
         }
     }
-    copyBtn.addEventListener('click', copyIpToClipboard);
+
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const ip = btn.getAttribute('data-ip');
+            if (ip) copyIpToClipboard(ip);
+        });
+    });
 
     function generateParticles() {
         const container = document.getElementById('particlesContainer');
