@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>FastEpix | Новости</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #010001;
+            color: #ededed;
+            line-height: 1.5;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, #0a0101 0%, #000000 100%);
+            z-index: -4;
+        }
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(200,40,40,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(200,40,40,0.1) 1px, transparent 1px);
+            background-size: 45px 45px;
+            pointer-events: none;
+            z-index: -3;
+            animation: gridShift 20s linear infinite;
+        }
+        @keyframes gridShift { 0% { background-position: 0 0; } 100% { background-position: 45px 45px; } }
+        .neon-glow-bg {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        .neon-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+            animation: floatNeon 18s infinite alternate ease-in-out;
+        }
+        .neon-blob:nth-child(1) { width: 60%; height: 60%; background: #b11f1f; top: -20%; left: -15%; animation-duration: 22s; opacity: 0.3; }
+        .neon-blob:nth-child(2) { width: 50%; height: 50%; background: #e33535; bottom: -15%; right: -10%; animation-duration: 25s; animation-delay: -5s; opacity: 0.25; }
+        .neon-blob:nth-child(3) { width: 45%; height: 45%; background: #ff4d4d; top: 35%; left: 20%; animation-duration: 19s; opacity: 0.2; filter: blur(110px); }
+        @keyframes floatNeon { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(4%,6%) scale(1.2); } }
+        .particles-container { position: fixed; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, #ff6a6a, #aa2222);
+            border-radius: 50%;
+            filter: blur(1.5px);
+            animation: particleRise 10s infinite linear;
+            opacity: 0;
+        }
+        @keyframes particleRise { 0% { transform: translateY(0) translateX(0); opacity: 0; } 15% { opacity: 0.7; } 85% { opacity: 0.5; } 100% { transform: translateY(-120vh) translateX(35px); opacity: 0; } }
+        .container { max-width: 1300px; margin: 0 auto; padding: 2rem 1.5rem 3rem; position: relative; z-index: 3; }
+        .header { text-align: center; margin-bottom: 3rem; border-bottom: 2px solid rgba(220,50,50,0.7); padding-bottom: 1.2rem; }
+        .logo { font-size: 3.4rem; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, #ff5a5a, #aa2a2a); background-clip: text; -webkit-background-clip: text; color: transparent; text-shadow: 0 0 20px rgba(255,50,50,0.8); }
+        .nav-links { display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 3rem; }
+        .nav-link {
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); border: 1px solid rgba(255,80,80,0.7);
+            padding: 0.8rem 2rem; font-size: 1.1rem; font-weight: 600; color: #fcd5d5; border-radius: 60px;
+            cursor: pointer; transition: 0.25s ease; font-family: inherit; letter-spacing: 0.5px; text-decoration: none; display: inline-block;
+        }
+        .nav-link.active { background: #b11f1f; border-color: #ff9090; color: white; box-shadow: 0 0 18px #e33535, 0 0 8px #ff5e5e inset; }
+        .nav-link:hover:not(.active) { background: rgba(200,50,50,0.8); border-color: #ff7a7a; transform: translateY(-2px); box-shadow: 0 0 12px #ff4d4d; }
+        .news-container { display: flex; flex-direction: column; gap: 1.8rem; }
+        .liquid-news-card {
+            background: rgba(12,12,18,0.6); backdrop-filter: blur(16px); border-radius: 1.8rem; border: 1px solid rgba(255,100,100,0.6);
+            padding: 1.6rem; transition: all 0.3s ease; position: relative; box-shadow: 0 6px 18px rgba(0,0,0,0.4); overflow: hidden;
+        }
+        .liquid-news-card::before {
+            content: ""; position: absolute; top: -20%; left: -10%; width: 120%; height: 120%;
+            background: radial-gradient(ellipse at 20% 30%, rgba(255,80,80,0.15), transparent 70%); pointer-events: none; z-index: 1;
+        }
+        .liquid-news-card::after {
+            content: ""; position: absolute; bottom: -10%; right: -10%; width: 100%; height: 100%;
+            background: radial-gradient(ellipse at 80% 70%, rgba(255,60,60,0.1), transparent 70%); pointer-events: none; z-index: 1;
+        }
+        .liquid-news-card:hover { box-shadow: 0 0 16px rgba(220,50,50,0.6), 0 6px 20px rgba(0,0,0,0.5); border-color: #ff8a8a; transform: translateY(-3px); }
+        .news-date-liquid { color: #ff9a9a; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.75rem; letter-spacing: 0.3px; position: relative; z-index: 2; }
+        .news-title-liquid { font-size: 1.5rem; font-weight: 700; color: #ff7a7a; margin-bottom: 0.75rem; position: relative; z-index: 2; }
+        .news-text-liquid { font-size: 1rem; color: #f0f0f0; line-height: 1.5; position: relative; z-index: 2; }
+        footer { margin-top: 4rem; text-align: center; opacity: 0.8; font-size: 0.85rem; padding-top: 2rem; border-top: 1px solid rgba(200,60,60,0.5); }
+        .toast-msg { position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%) scale(0.9); background: #1f0f0fe6; backdrop-filter: blur(16px); color: #ffcaca; padding: 0.8rem 1.8rem; border-radius: 60px; font-weight: 500; border: 1px solid #ff6e6e; z-index: 1100; opacity: 0; transition: 0.2s; pointer-events: none; font-size: 0.9rem; white-space: nowrap; box-shadow: 0 0 8px rgba(255,50,50,0.3); }
+        .toast-msg.show { opacity: 1; transform: translateX(-50%) scale(1); }
+    </style>
+</head>
+<body>
+<div class="grid-overlay"></div>
+<div class="neon-glow-bg"><div class="neon-blob"></div><div class="neon-blob"></div><div class="neon-blob"></div></div>
+<div class="particles-container" id="particlesContainer"></div>
+<div class="container">
+    <div class="header"><div class="logo">FastEpix</div></div>
+    <div class="nav-links">
+        <a href="index.html" class="nav-link">Главная</a>
+        <a href="news.html" class="nav-link active">Новости FastEpix</a>
+        <a href="devs.html" class="nav-link">О разработчиках</a>
+    </div>
+    <h2 style="color: #ff6a6a; margin-bottom: 1.8rem; font-size: 1.8rem; font-weight: 700;">Лента новостей FastEpix</h2>
+    <div class="news-container">
+        <div class="liquid-news-card">
+            <div class="news-date-liquid">20 апреля 2024</div>
+            <div class="news-title-liquid">Постоянные игроки!</div>
+            <div class="news-text-liquid">На сервере появился стабильный онлайн. Каждый день на наш проект заходят несколько человек — а это значит, что мы движемся в правильном направлении. Мы искренне рады, что игрокам нравится FastEpix. Спасибо вам за поддержку! Обещаем и дальше улучшать сервер и радовать вас новым контентом.</div>
+        </div>
+        <div class="liquid-news-card">
+            <div class="news-date-liquid">15 апреля 2024</div>
+            <div class="news-title-liquid">Новый спавн!!</div>
+            <div class="news-text-liquid">Наш лучший строитель и его помощник, построили новый спавн!</div>
+        </div>
+        <div class="liquid-news-card">
+            <div class="news-date-liquid">6 декабря 2024</div>
+            <div class="news-title-liquid">Добавлены новые варпы</div>
+            <div class="news-text-liquid">Добавлены варпы:<br>/warp Anarxiya (он ведёт в обычный мир анархии)<br>/warp rules (он создан чтобы ознакомиться с правилами проекта)</div>
+        </div>
+        <div class="liquid-news-card">
+            <div class="news-date-liquid">5 декабря 2024</div>
+            <div class="news-title-liquid">Технические работы завершены</div>
+            <div class="news-text-liquid">Добавлен WorldEdit, а так же плагин на варпы.</div>
+        </div>
+    </div>
+    <footer>FastEpix © 2024-2026</footer>
+</div>
+<script>
+    function generateParticles() {
+        const container = document.getElementById('particlesContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        for (let i = 0; i < 170; i++) {
+            const p = document.createElement('div');
+            p.classList.add('particle');
+            const size = Math.random() * 4 + 1.2;
+            p.style.width = `${size}px`;
+            p.style.height = `${size}px`;
+            p.style.left = `${Math.random() * 100}%`;
+            p.style.bottom = `-20px`;
+            p.style.animationDelay = `${Math.random() * 15}s`;
+            p.style.animationDuration = `${7 + Math.random() * 14}s`;
+            p.style.opacity = Math.random() * 0.7 + 0.2;
+            container.appendChild(p);
+        }
+    }
+    generateParticles();
+</script>
+</body>
+</html>
